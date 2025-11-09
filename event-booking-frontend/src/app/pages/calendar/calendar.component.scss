@@ -1,0 +1,127 @@
+.calendar-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .week-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .week-label {
+      font-size: 1.25rem;
+      font-weight: 600;
+      min-width: 160px;
+      text-align: center;
+    }
+  }
+
+  .filters {
+    max-width: 320px;
+  }
+}
+
+.calendar-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.calendar-column {
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .column-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+
+    .day-label {
+      font-weight: 600;
+      font-size: 1rem;
+      display: block;
+    }
+
+    .day-full {
+      font-size: 0.85rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.slot-card {
+  border-left: 4px solid transparent;
+
+  &.booked {
+    border-left-color: #b0bec5;
+    background-color: rgba(224, 224, 224, 0.2);
+  }
+
+  &.mine {
+    border-left-color: #1976d2;
+    background-color: rgba(25, 118, 210, 0.08);
+  }
+
+  mat-card-header {
+    padding-bottom: 0;
+
+    mat-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  mat-card-subtitle {
+    font-size: 0.85rem;
+  }
+
+  mat-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+.empty-day {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.loading-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 0;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.info-card {
+  margin-top: 1.5rem;
+  max-width: 480px;
+}
+
+@media (max-width: 768px) {
+  .week-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .calendar-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
