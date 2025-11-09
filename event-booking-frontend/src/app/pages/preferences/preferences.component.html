@@ -1,0 +1,107 @@
+<mat-card class="preferences-card">
+  <mat-card-header>
+    <mat-card-title>Event Preferences</mat-card-title>
+    <mat-card-subtitle>
+      Let us know who you are and which event categories interest you.
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="preferences-form">
+    <mat-card-content>
+      <div class="details-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Display name</mat-label>
+          <input
+            matInput
+            formControlName="displayName"
+            placeholder="e.g. Alex Johnson"
+            required
+            autocomplete="name"
+          />
+          <mat-hint>Shown next to events you sign up for.</mat-hint>
+          <mat-error *ngIf="displayNameControl.hasError('required')"
+            >A display name is required.</mat-error
+          >
+          <mat-error *ngIf="displayNameControl.hasError('maxlength')">
+            Display name must be 80 characters or fewer.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+          <mat-hint>Used to confirm and manage your bookings.</mat-hint>
+          <mat-error *ngIf="emailControl.hasError('email')">
+            Please provide a valid email address.
+          </mat-error>
+          <mat-error *ngIf="emailControl.hasError('maxlength')">
+            Email must be 160 characters or fewer.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <section class="categories-section">
+        <header>
+          <h3>Preferred categories</h3>
+          <span class="selection-count" *ngIf="form.value.categoryIds?.length">
+            {{ form.value.categoryIds.length }} selected
+          </span>
+        </header>
+
+        <div class="categories-wrapper" *ngIf="!isLoading; else categoriesLoading">
+          <mat-selection-list formControlName="categoryIds">
+            <mat-list-option
+              *ngFor="let category of categories"
+              [value]="category.id"
+            >
+              {{ category.name }}
+            </mat-list-option>
+          </mat-selection-list>
+
+          <p class="empty-state" *ngIf="categories.length === 0">
+            No categories are available right now. Please contact an administrator.
+          </p>
+        </div>
+      </section>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="selectAll()"
+        [disabled]="!categories.length"
+      >
+        <mat-icon aria-hidden="true">select_all</mat-icon>
+        Select all
+      </button>
+      <span class="flex-spacer"></span>
+      <button mat-stroked-button type="button" (click)="reset()">
+        <mat-icon aria-hidden="true">undo</mat-icon>
+        Reset
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || isSaving"
+      >
+        <mat-icon aria-hidden="true">save</mat-icon>
+        Save preferences
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>
+
+<ng-template #categoriesLoading>
+  <div class="loading-container">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <span>Loading categories...</span>
+  </div>
+</ng-template>

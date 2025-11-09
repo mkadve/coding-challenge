@@ -1,0 +1,42 @@
+<mat-toolbar color="primary" class="app-toolbar" role="banner">
+  <button
+    mat-icon-button
+    class="brand-icon"
+    routerLink="/calendar"
+    aria-label="Go to calendar view"
+  >
+    <mat-icon>event</mat-icon>
+  </button>
+  <span class="app-title">{{ title }}</span>
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/calendar" routerLinkActive="active-link">Calendar</a>
+  <a mat-button routerLink="/preferences" routerLinkActive="active-link">Preferences</a>
+  <a mat-button routerLink="/admin" routerLinkActive="active-link">Admin</a>
+
+  <ng-container *ngIf="preferences$ | async as prefs">
+    <button mat-button [matMenuTriggerFor]="userMenu" class="profile-button">
+      <mat-icon aria-hidden="true">person</mat-icon>
+      <span class="profile-name">{{ prefs.displayName || 'Guest' }}</span>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/preferences">
+        <mat-icon aria-hidden="true">settings</mat-icon>
+        <span>Update preferences</span>
+      </button>
+      <button mat-menu-item disabled *ngIf="prefs.email">
+        <mat-icon aria-hidden="true">mail</mat-icon>
+        <span>{{ prefs.email }}</span>
+      </button>
+      <button mat-menu-item disabled *ngIf="!prefs.email">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        <span>No email configured</span>
+      </button>
+    </mat-menu>
+  </ng-container>
+</mat-toolbar>
+
+<main class="app-content" role="main">
+  <router-outlet></router-outlet>
+</main>

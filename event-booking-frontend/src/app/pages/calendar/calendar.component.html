@@ -1,0 +1,154 @@
+<section class="calendar-toolbar">
+  <div class="week-controls">
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="changeWeek(-1)"
+      aria-label="Previous week"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <div class="week-label">{{ weekRangeLabel }}</div>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="changeWeek(1)"
+      aria-label="Next week"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button
+      mat-stroked-button
+      color="primary"
+      type="button"
+      (click)="goToCurrentWeek()"
+      [disabled]="isCurrentWeek"
+    >
+      This Week
+    </button>
+  </div>
+
+  <div class="filters" *ngIf="hasPreferences; else missingPreferences">
+    <mat-form-field appearance="outline">
+      <mat-label>Event categories</mat-label>
+      <mat-select
+        multiple
+        [value]="activeCategoryIds"
+        (valueChange)="onCategoryFilterChange($event)"
+        placeholder="Select categories"
+      >
+        <mat-option
+          *ngFor="let category of preferredCategories"
+          [value]="category.id"
+        >
+          {{ category.name }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Filter the calendar by your preferred categories.</mat-hint>
+    </mat-form-field>
+  </div>
+</section>
+
+<ng-template #missingPreferences>
+  <mat-card class="info-card">
+    <mat-card-title>Set your preferences</mat-card-title>
+    <mat-card-content>
+      <p>
+        Select the event categories you care about before browsing the calendar.
+      </p>
+      <a mat-flat-button color="primary" routerLink="/preferences">
+        Update preferences
+      </a>
+    </mat-card-content>
+  </mat-card>
+</ng-template>
+
+<div class="calendar-wrapper" *ngIf="hasPreferences">
+  <ng-container *ngIf="!isLoadingSlots; else loadingSlots">
+    <div class="calendar-grid">
+      <div
+        class="calendar-column"
+        *ngFor="let day of calendarDays; trackBy: trackByDay"
+      >
+        <header class="column-header">
+          <span class="day-label">{{ day.label }}</span>
+          <span class="day-full">{{ day.fullLabel }}</span>
+        </header>
+
+        <ng-container *ngIf="day.slots.length; else emptyDay">
+          <mat-card
+            class="slot-card"
+            *ngFor="let slot of day.slots; trackBy: trackBySlot"
+            [ngClass]="{
+              booked: isBooked(slot),
+              mine: isBookedByCurrentUser(slot)
+            }"
+          >
+            <mat-card-header>
+              <mat-card-title>{{ formatTimeRange(slot) }}</mat-card-title>
+              <mat-card-subtitle>{{ slot.category.name }}</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <p *ngIf="isBookedByCurrentUser(slot)">
+                You're signed up for this event.
+              </p>
+              <p *ngIf="isBooked(slot) && !isBookedByCurrentUser(slot)">
+                Reserved by another attendee.
+              </p>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <ng-container *ngIf="!isBooked(slot); else bookedState">
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="bookSlot(slot)"
+                  [disabled]="isActionDisabled(slot)"
+                >
+                  <mat-icon aria-hidden="true">event_available</mat-icon>
+                  Sign up
+                </button>
+              </ng-container>
+              <ng-template #bookedState>
+                <button
+                  mat-stroked-button
+                  color="accent"
+                  *ngIf="isBookedByCurrentUser(slot); else reservedButton"
+                  (click)="cancelBooking(slot)"
+                  [disabled]="isActionDisabled(slot)"
+                >
+                  <mat-icon aria-hidden="true">cancel</mat-icon>
+                  Cancel booking
+                </button>
+                <ng-template #reservedButton>
+                  <button mat-stroked-button disabled>
+                    <mat-icon aria-hidden="true">lock</mat-icon>
+                    Reserved
+                  </button>
+                </ng-template>
+              </ng-template>
+
+              <mat-progress-spinner
+                *ngIf="pendingSlotIds.has(slot.id)"
+                diameter="24"
+                mode="indeterminate"
+              ></mat-progress-spinner>
+            </mat-card-actions>
+          </mat-card>
+        </ng-container>
+
+        <ng-template #emptyDay>
+          <div class="empty-day">No slots scheduled.</div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loadingSlots>
+  <div class="loading-panel">
+    <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+    <span>Loading the calendar…</span>
+  </div>
+</ng-template>
